@@ -1,6 +1,19 @@
+#wrapper {
+    width:100%;
+}
+
 #calculator {
     border: 4 royalblue;
     background-color: gray;
-    width: 800px;
-    height: 500px;
+    margin-left: 20%;
+    margin-right: 20%;
+    width: auto;
+    height: 60vh;
+    margin-top: 20vh;
+}
+
+#input, #display {
+    background-color: black;
+    color: white;
+    text-align: end;
 }

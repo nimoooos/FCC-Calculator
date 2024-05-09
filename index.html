@@ -11,11 +11,39 @@
 </head>
 
 <body>
-    <div id="wrapper">
+    <div id="wrapper" class="container justify-content">
         <div id="calculator">
-            <div id="input"></div>
-            <div id="display"></div>
-
+            <div id="input" class="mx-2 p-2 border border-primary">input</div>
+            <div id="display" class="mx-2 p-2 border border-warning">0</div>
+            <div id="keypads" class="border">
+                <div class="row border">
+                    <div class="col-9 border" id="clear">CE</div>
+                    <div class="col border" id="divide">/</div>
+                </div>
+                <div class="row border">
+                    <div class="col border" id="seven">7</div>
+                    <div class="col border" id="eight">8</div>
+                    <div class="col border" id="nine">9</div>
+                    <div class="col border" id="multiply">*</div>
+                </div>
+                <div class="row border">
+                    <div class="col border" id="four">4</div>
+                    <div class="col border" id="five">5</div>
+                    <div class="col border" id="six">6</div>
+                    <div class="col border" id="subtract">-</div>
+                </div>
+                <div class="row border">
+                    <div class="col border" id="one">1</div>
+                    <div class="col border" id="two">2</div>
+                    <div class="col border" id="three">3</div>
+                    <div class="col border" id="add">+</div>
+                </div>
+                <div class="row border">
+                    <div class="col-6 border" id="zero">0</div>
+                    <div class="col border" id="decimal">.</div>
+                    <div class="col border" id="equals">=</div>
+                </div>
+            </div>
 
         </div>
     </div>
