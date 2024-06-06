@@ -5,15 +5,28 @@
 #calculator {
     border: 4 royalblue;
     background-color: gray;
-    margin-left: 20%;
-    margin-right: 20%;
+    margin-left: 30%;
+    margin-right: 30%;
     width: auto;
-    height: 60vh;
+    height: auto;
     margin-top: 20vh;
 }
 
-#input, #display {
+#formula, #display {
     background-color: black;
     color: white;
     text-align: end;
+    font-size: large;
+    height: 2.5rem;
+}
+
+#formula {
+    color: blueviolet;
+}
+
+
+.key {
+    text-align: center;
+    font-size: xx-large;
+    background-color: #999999;
 }
