@@ -1,6 +1,7 @@
 let formulaValue = "0";
 let displayValue = "0";
-let operator = "initialized"
+let operator = "initialized";
+let isDecimal = false;
 
 $(".key").on("click", function (e) {
     const KVPair = {
@@ -40,9 +41,11 @@ function numberHandler(value) {
     if(operator=="initialized"){
         displayValue=`${value}`;
         operator="number";
+    } else if(displayValue=="0" && value==0) {
+        operator="number";
     } else {
-    displayValue = displayValue+`${value}`;
-    operator="number";
+        displayValue = displayValue+`${value}`;
+        operator="number";
     }
 }
 
@@ -50,15 +53,23 @@ function syntaxHandler(value){
     console.log("Syntax key", value, "was pressed.");
     switch(value){
         case "CE":
-            formulaValue="0";
-            displayValue="0";
-            operator="initialized";
-        case "decimal":
+            initialize();
+            break;
+        case ".":
+            if(isDecimal){break}
             formulaValue=formulaValue+".";
             displayValue=displayValue+".";
             operator="decimal";
-
+            isDecimal=true;
+            break;
     }
+}
+
+function initialize() {
+    formulaValue="0";
+    displayValue="0";
+    operator="initialized";
+    isDecimal=false;
 }
 
 function updateState(){
