@@ -1,6 +1,9 @@
 let formulaValue = "0";
 let displayValue = "0";
-let operator = "initialized";
+let inputState = "initialized";
+function setInputState(newState){
+    inputState=newState;
+}
 let isDecimal = false;
 
 $(".key").on("click", function (e) {
@@ -38,14 +41,14 @@ $(".key").on("click", function (e) {
 
 function numberHandler(value) {
     console.log("Number key", value, "was pressed.");
-    if(operator=="initialized"){
+    if(inputState=="initialized"){
         displayValue=`${value}`;
-        operator="number";
+        setInputState("number");
     } else if(displayValue=="0" && value==0) {
-        operator="number";
+        setInputState("number");
     } else {
         displayValue = displayValue+`${value}`;
-        operator="number";
+        setInputState("number");
     }
 }
 
@@ -59,21 +62,45 @@ function syntaxHandler(value){
             if(isDecimal){break}
             formulaValue=formulaValue+".";
             displayValue=displayValue+".";
-            operator="decimal";
+            setInputState("decimal");
             isDecimal=true;
             break;
+        case "=":
+            operate(formulaValue, displayValue, "last value") //todo: implement a way to remember last operation used
+        default:  // for four functions
+            
+            formulaValue=displayValue;
+            displayValue=operate(formulaValue, displayValue, value);
+            isDecimal=false;
+            setInputState("initialized");
     }
 }
 
 function initialize() {
     formulaValue="0";
     displayValue="0";
-    operator="initialized";
+    setInputState("initialized");
     isDecimal=false;
+}
+
+function operate(num1, num2, operation) {
+    /*
+    Does the calculation based on input parameters. Should be number, number, and string
+    */
+   switch(value){
+    case "+":
+        return num1+num2;
+    case "-":
+        return num1-num2;
+    case "*":
+        return num1*num2;
+    case "/":
+        return num1/num2;
+   }
 }
 
 function updateState(){
     document.getElementById("formula").innerText=formulaValue;
     document.getElementById("display").innerText=displayValue;
-    console.log(displayValue,operator)
+    console.log(displayValue,inputState)
 }
