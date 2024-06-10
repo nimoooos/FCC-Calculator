@@ -2,6 +2,17 @@ let formulaValue = "0";
 let displayValue = "0";
 let inputState = "initialized";
 function setInputState(newState){
+    /** 
+     * states are:
+     * "initialized": no previous input, happens on startup and when pressing CE
+     * "number entry": just entered in a number; can continue accepting numbers, or receive syntax to change state
+     * "syntax entry": just entered in a syntax; can accept new syntax to switch, or receive a number to change state
+     * 
+     * we track this by:
+     * "isInitialized" flag: is this initialized? set to true on startup and CE, set to false upon anything else
+     * "canDecimal" flag: can I put a decimal in this number? set to false upon entering a decimal, set to true upon entering a number or initializing
+     * "waitingForNewNumber" flag: if four basic functions or equal sign was used to reset.
+    */
     inputState=newState;
 }
 let isDecimal = false;
@@ -87,15 +98,15 @@ function operate(num1, num2, operation) {
     /*
     Does the calculation based on input parameters. Should be number, number, and string
     */
-   switch(value){
+   switch(operation){
     case "+":
-        return num1+num2;
+        return Number(num1)+Number(num2);
     case "-":
-        return num1-num2;
+        return Number(num1)-Number(num2);
     case "*":
-        return num1*num2;
+        return Number(num1)*Number(num2);
     case "/":
-        return num1/num2;
+        return Number(num1)/Number(num2);
    }
 }
 
