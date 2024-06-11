@@ -2,128 +2,115 @@ let formulaValue = "0";
 let displayValue = "0";
 // let inputState = "initialized";
 const initialState = {
-    isInitialized: true,
     isDecimal: false,
-    waitingForNewNumber: true
+    waitingForNewNumber: true,
+    lastNumber: null,
+    lastOperation: null
 }
-let inputState = initialState;
-function setInputState(newState){
+let inputState = {};
+setInputState(initialState);
+function setInputState(newState) {
     /** 
-     * states are:
-     * "initialized": no previous input, happens on startup and when pressing CE. Cannot take syntax as input
-     * "number entry": just entered in a number; can continue accepting numbers, or receive syntax to change state
-     * "syntax entry": just entered in a syntax; can accept new syntax to switch, or receive a number to change state
+     * copies the values from newState
      * 
-     * we track this by:
+     * we track states with following flags:
      * "isInitialized" flag: is this initialized? set to true on startup and CE, set to false upon anything else
      * "isDecimal" flag: is the current number a decimal number? Set to true on adding decimal, set to false on entering new number
      * "waitingForNewNumber" flag: set to true if four basic functions or equal sign was used to reset number entry; if already entering numbers, set to false
     */
-    inputState.isInitialized = newState.isInitialized;
-    inputState.isDecimal = newState.isDecimal;
-    inputState.waitingForNewNumber = newState.waitingForNewNumber;
+    
+    for (let key in newState) {
+        // console.log(`inputState[${key}] = ${newState[key]}`);
+        inputState[key] = newState[key];
+    }
 }
-// let isDecimal = false;
 
 function initialize() {
-    formulaValue="0";
-    displayValue="0";
+    formulaValue = "0";
+    displayValue = "0";
     setInputState(initialState);
 }
 
-
-
 $(".key").on("click", function (e) {
     /**
-     * Called upon keypress, and calls numberHandler or syntaxHandler
+     * Called upon keypress, handles input, then updates display
      */
     const KVPair = {
-        "zero": 0,
-        "one": 1,
-        "two": 2,
-        "three": 3,
-        "four": 4,
-        "five": 5,
-        "six": 6,
-        "seven": 7,
-        "eight": 8,
-        "nine": 9,
-        "decimal": ".",
-        "clear": "CE",
-        "divide": "/",
-        "multiply": "*",
-        "subtract": "-",
-        "add": "+",
-        "equals": "="
+        "zero": 0, "one": 1, "two": 2, "three": 3, "four": 4, "five": 5, "six": 6, "seven": 7, "eight": 8, "nine": 9,
+        "decimal": ".", "clear": "CE", "divide": "/", "multiply": "*", "subtract": "-", "add": "+", "equals": "="
     }
-    const targetId = e.target.id;
-    const value = KVPair[targetId];
+    const value = KVPair[e.target.id];  // convert keypress into value
+    const isNumber = Number(value) === value;  // if value is number, return true
 
-    const isNumber = Number(value) === value;
-
-    function updateState(){
-        document.getElementById("formula").innerText=formulaValue;
-        document.getElementById("display").innerText=displayValue;
-        console.log(displayValue,inputState)
+    function updateHTML() {
+        /**
+         * update formula and display elements
+         */
+        document.getElementById("formula").innerText = formulaValue;
+        document.getElementById("display").innerText = displayValue;
+        console.log(inputState);
     }
 
-    if (isNumber) {
+    if (value == "CE") {
+        console.log("CE was pressed.");
+        initialize();
+    } else if (isNumber) {
         numberHandler(value);
     } else {
         syntaxHandler(value);
     }
-    updateState();
+    updateHTML();
 })
 
+
 function numberHandler(value) {
+    /**
+     * Three main states-- initialized, inputting a new number, and continuing an existing number
+     */
     console.log("Number key", value, "was pressed.");
-    if(inputState=="initialized"){
-        displayValue=`${value}`;
-        setInputState("number");
-    } else if(displayValue=="0" && value==0) {
-        setInputState("number");
-    } else {
-        displayValue = displayValue+`${value}`;
-        setInputState("number");
+
+    if (inputState.waitingForNewNumber) {  //if initial state or inputting new number
+        displayValue = String(value);
+        setInputState({waitingForNewNumber:false});
+    } else {  // continuing an existing number
+        displayValue = displayValue+String(value);
     }
 }
 
-function syntaxHandler(value){
+function syntaxHandler(value) {
     function operate(num1, num2, operation) {
         /*
         Does the calculation based on input parameters. Should be number, number, and string
         */
-       switch(operation){
-        case "+":
-            return Number(num1)+Number(num2);
-        case "-":
-            return Number(num1)-Number(num2);
-        case "*":
-            return Number(num1)*Number(num2);
-        case "/":
-            return Number(num1)/Number(num2);
-       }
+        switch (operation) {
+            case "+":
+                return Number(num1) + Number(num2);
+            case "-":
+                return Number(num1) - Number(num2);
+            case "*":
+                return Number(num1) * Number(num2);
+            case "/":
+                return Number(num1) / Number(num2);
+        }
     }
+
     console.log("Syntax key", value, "was pressed.");
-    switch(value){
-        case "CE":
-            initialize();
-            break;
+    switch (value) {
         case ".":
-            console.log("Decimal was pressed. No action taken.")
-            // if(isDecimal){break}
-            // formulaValue=formulaValue+".";
-            // displayValue=displayValue+".";
-            // setInputState("decimal");
-            // isDecimal=true;
-            // break;
+            console.log("Decimal was pressed. No action taken.");
+        // if(isDecimal){break}
+        // formulaValue=formulaValue+".";
+        // displayValue=displayValue+".";
+        // setInputState("decimal");
+        // isDecimal=true;
+        // break;
         case "=":
-            operate(formulaValue, displayValue, "last value") //todo: implement a way to remember last operation used
+            console.log("Equal sign was pressed. No action taken.");
         default:  // for four functions
-            
-            formulaValue=displayValue;
-            displayValue=operate(formulaValue, displayValue, value);
-            // isDecimal=false;
-            setInputState("initialized");
+
+            formulaValue = displayValue;
+            displayValue = operate(formulaValue, displayValue, value);
+        // isDecimal=false;
+        // setInputState("initialized");
     }
 }
