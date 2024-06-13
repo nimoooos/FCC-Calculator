@@ -18,7 +18,7 @@ function setInputState(newState) {
      * "isDecimal" flag: is the current number a decimal number? Set to true on adding decimal, set to false on entering new number
      * "waitingForNewNumber" flag: set to true if four basic functions or equal sign was used to reset number entry; if already entering numbers, set to false
     */
-    
+    // console.log(newState);
     for (let key in newState) {
         // console.log(`inputState[${key}] = ${newState[key]}`);
         inputState[key] = newState[key];
@@ -72,13 +72,15 @@ function numberHandler(value) {
     if (inputState.waitingForNewNumber) {  //if initial state or inputting new number
         displayValue = String(value);
         setInputState({waitingForNewNumber:false});
+    } else if (displayValue=="0", value==0) {
+        // handle consecutive zero with no action
     } else {  // continuing an existing number
         displayValue = displayValue+String(value);
     }
 }
 
 function syntaxHandler(value) {
-    function operate(num1, num2, operation) {
+    function operate(num1, operation, num2) {
         /*
         Does the calculation based on input parameters. Should be number, number, and string
         */
@@ -95,22 +97,25 @@ function syntaxHandler(value) {
     }
 
     console.log("Syntax key", value, "was pressed.");
-    switch (value) {
-        case ".":
-            console.log("Decimal was pressed. No action taken.");
-        // if(isDecimal){break}
-        // formulaValue=formulaValue+".";
-        // displayValue=displayValue+".";
-        // setInputState("decimal");
-        // isDecimal=true;
-        // break;
-        case "=":
-            console.log("Equal sign was pressed. No action taken.");
-        default:  // for four functions
-
-            formulaValue = displayValue;
-            displayValue = operate(formulaValue, displayValue, value);
-        // isDecimal=false;
-        // setInputState("initialized");
+    if (value == ".") {
+        console.log("Decimal was pressed.");
+        if (!inputState.isDecimal){
+            displayValue = String(displayValue)+".";    
+            setInputState({isDecimal:true});
+        } else {
+            // cannot add another decimal point
+        }
+        
+        
+    } else if (value == "=") {
+        console.log("Equal sign was pressed. No action taken.");
+    } else {
+        console.log("Four Functions key was pressed. No action taken.");
+        if (inputState.lastNumber==null && inputState.lastOperation==null){
+            // first operation key after initializing
+            inputState.lastNumber=displayValue;
+            
+        }
     }
+
 }
