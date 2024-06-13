@@ -5,7 +5,8 @@ const initialState = {
     isDecimal: false,
     waitingForNewNumber: true,
     lastNumber: null,
-    lastOperation: null
+    lastOperation: null,
+    newNumberIsNegative: false
 }
 let inputState = {};
 setInputState(initialState);
@@ -49,6 +50,7 @@ $(".key").on("click", function (e) {
         document.getElementById("formula").innerText = formulaValue;
         document.getElementById("display").innerText = displayValue;
         console.log(inputState);
+        console.log({"displayValue": displayValue});
     }
 
     if (value == "CE") {
@@ -72,8 +74,12 @@ function numberHandler(value) {
     if (inputState.waitingForNewNumber) {  //if initial state or inputting new number
         displayValue = String(value);
         setInputState({waitingForNewNumber:false});
-    } else if (displayValue=="0", value==0) {
+    } else if (displayValue=="0" && value==0) {
         // handle consecutive zero with no action
+        console.log("displayvalue:", displayValue);
+        console.log("displayvalue=='0'", displayValue=="0");
+        
+        console.log("Adding zero to zero does nothing.")
     } else {  // continuing an existing number
         displayValue = displayValue+String(value);
     }
@@ -84,6 +90,13 @@ function syntaxHandler(value) {
         /*
         Does the calculation based on input parameters. Should be number, number, and string
         */
+       if(inputState.newNumberIsNegative){
+        num2=-num2;
+        setInputState({
+            newNumberIsNegative:false
+        })
+       }
+       console.log("Performing operation: ", num1, operation, num2)
         switch (operation) {
             case "+":
                 return Number(num1) + Number(num2);
@@ -108,13 +121,56 @@ function syntaxHandler(value) {
         
         
     } else if (value == "=") {
-        console.log("Equal sign was pressed. No action taken.");
+        console.log("Equal sign was pressed.");
+        displayValue = operate(inputState.lastNumber, inputState.lastOperation, displayValue);
+        setInputState({
+            lastNumber: null,
+            lastOperation: null,
+            waitingForNewNumber: true,
+            isDecimal: false
+        })
     } else {
-        console.log("Four Functions key was pressed. No action taken.");
+        console.log("Four Functions key was pressed.");
         if (inputState.lastNumber==null && inputState.lastOperation==null){
             // first operation key after initializing
-            inputState.lastNumber=displayValue;
+            console.log("state:", "first operation key after initializing");
+            // if no number was put in (if waitingForNewNumber is true), then lastNumber is 0
+            setInputState({
+                lastNumber: displayValue,
+                lastOperation: value,
+                waitingForNewNumber: true,
+                isDecimal: false
+            })
+        } else if (inputState.lastNumber!=null && inputState.lastOperation!=null && inputState.waitingForNewNumber) {
+            // two consecutive operation key
+            console.log("state:", "two consecutive operation key");
+            if(displayValue="-"){displayValue=""}
+
+            if(value=="-"){
+                displayValue="-";
+                setInputState({
+                    newNumberIsNegative: true
+                })
+            } else{
+            setInputState({
+                lastOperation: value,
+                waitingForNewNumber: false,
+                isDecimal: false,
+                newNumberIsNegative: false
+            })
+            }
             
+        } else if (inputState.lastNumber!=null && inputState.lastOperation!=null && !inputState.waitingForNewNumber) {
+            //chain operation
+            console.log("state:", "chain operation");
+
+            // displayValue = operate(inputState.lastNumber, value, displayValue);
+            setInputState({
+                lastNumber: operate(inputState.lastNumber, inputState.lastOperation, displayValue),
+                lastOperation: value,
+                waitingForNewNumber: true,
+                isDecimal: false
+            });
         }
     }
 
